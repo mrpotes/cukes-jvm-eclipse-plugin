@@ -101,5 +101,6 @@ public class FeatureConfiguration extends SourceViewerConfiguration {
 		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_BUT);
 		return assistant;
 	}
+	
 
 }

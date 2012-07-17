@@ -174,7 +174,7 @@ public class Activator extends AbstractUIPlugin {
 			for (IAnnotation annotation : method.getAnnotations()) {
 				String annotationName = annotation.getElementName();
 				String step = annotation.getMemberValuePairs()[0].getValue().toString();
-				getLog().log(new Status(Status.INFO, PLUGIN_ID, "Adding step definition ["+step+"] for "+method.getCompilationUnit().getResource()));
+//				getLog().log(new Status(Status.INFO, PLUGIN_ID, "Adding step definition ["+step+"] for "+method.getCompilationUnit().getResource()));
 				if ("Given".equals(annotationName)) {
 					givenSteps.put(step, method);
 				} else if ("Then".equals(annotationName)) {
@@ -202,7 +202,7 @@ public class Activator extends AbstractUIPlugin {
 			while (stepIterator.hasNext()) {
 				Entry<String, IMethod> entry = stepIterator.next();
 				if (resource.equals(entry.getValue().getCompilationUnit().getResource())) {
-					getLog().log(new Status(Status.INFO, PLUGIN_ID, "Removing step definition ["+entry.getKey()+"] for "+resource.toString()));
+//					getLog().log(new Status(Status.INFO, PLUGIN_ID, "Removing step definition ["+entry.getKey()+"] for "+resource.toString()));
 					stepIterator.remove();
 				}
 			}

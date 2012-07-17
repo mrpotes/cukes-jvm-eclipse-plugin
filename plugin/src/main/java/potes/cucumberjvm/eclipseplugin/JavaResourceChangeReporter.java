@@ -56,7 +56,7 @@ public class JavaResourceChangeReporter implements IResourceChangeListener {
 			}
 			IJavaElement javaResource = JavaCore.create(delta.getResource());
 			if (javaResource != null) {
-				Activator.getDefault().getLog().log(new Status(Status.INFO, Activator.PLUGIN_ID, javaResource.getClass().getName()+": "+javaResource.toString()));
+//				Activator.getDefault().getLog().log(new Status(Status.INFO, Activator.PLUGIN_ID, javaResource.getClass().getName()+": "+javaResource.toString()));
 				if (javaResource instanceof IType || javaResource instanceof ICompilationUnit) {
 					if (delta.getKind() == IResourceDelta.ADDED || delta.getKind() == IResourceDelta.CHANGED) {
 						Activator.getDefault().checkTypeInProject(javaResource.getJavaProject(), javaResource);

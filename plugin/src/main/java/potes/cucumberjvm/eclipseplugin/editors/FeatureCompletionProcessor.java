@@ -55,7 +55,6 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 		} else if (words[0] == null){
 			return asProposalList(offset, 0, ALL_KEYWORDS);
 		} else if (STEP_KEYWORDS.contains(trimmedKeyword)) {
-			Activator.getDefault().getLog().log(new Status(Status.INFO, Activator.PLUGIN_ID, Arrays.toString(words)));
 			List<String> stepProposals = Activator.getDefault().getSteps(trimmedKeyword);
 			if (JOINING_KEYWORDS.contains(trimmedKeyword)) {
 				List<String> moreStepProposals = Activator.getDefault().getSteps(findPreviousKeyword(document, offset));
