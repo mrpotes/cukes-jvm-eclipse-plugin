@@ -20,6 +20,8 @@ import org.eclipse.jface.text.DefaultTextDoubleClickStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.BufferedRuleBasedScanner;
@@ -83,16 +85,21 @@ public class FeatureConfiguration extends SourceViewerConfiguration {
 	}
 	
 	static class SingleTokenScanner extends BufferedRuleBasedScanner {
-
-		/**
-		 * 
-		 * 
-		 * @param attribute
-		 */
 		public SingleTokenScanner(TextAttribute attribute) {
 			setDefaultReturnToken(new Token(attribute));
 		}
-	};
+	}
 
+	@Override
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+		ContentAssistant assistant = new ContentAssistant();
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_GIVEN);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_WHEN);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_THEN);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_AND);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_BUT);
+		return assistant;
+	}
 
 }

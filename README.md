@@ -8,8 +8,8 @@ TO-DO
 
 * ~~.feature editor~~
 * ~~keyword syntax highlighting~~
-* keyword auto-complete
-* step auto-complete
+* ~~keyword auto-complete~~
+* ~~step auto-complete~~
 * step definition parameter syntax highlighting
 * step definition linking
 * step table argument usage highlighting
