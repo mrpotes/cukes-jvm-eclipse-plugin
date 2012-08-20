@@ -13,7 +13,7 @@ TO-DO
 * step definition parameter syntax highlighting
 * step definition linking
 * step table argument usage highlighting
-* Right-click Run-as for .feature files
+* ~~Right-click Run-as for .feature files~~
 * JUnit results view to feature file linking (if possible?)
 
 License
