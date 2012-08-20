@@ -28,4 +28,47 @@
       </editor>
    </extension>
 
+	<extension point="org.eclipse.debug.ui.launchShortcuts">
+	    <shortcut
+	          label="Cucumber Test"
+	          icon="$nl$/icons/full/obj16/julaunch.gif"
+	          helpContextId="org.eclipse.jdt.junit.launch_shortcut"
+	          class="potes.cucumberjvm.eclipseplugin.launch.CucumberLaunchShortcut"
+	          modes="run, debug"
+	          id="potes.cucumberjvm.junitShortcut">
+	       <contextualLaunch>
+	          <enablement>
+	             <with variable="selection">
+	                <count value="1"/>
+	                <iterate>
+	                   <adapt type="org.eclipse.jdt.core.IJavaElement">
+	                      <test property="org.eclipse.debug.ui.matchesPattern" value="*.feature"/>
+	                      <test property="org.eclipse.jdt.core.isInJavaProject"/>
+	                      <test property="org.eclipse.jdt.core.hasTypeOnClasspath" value="junit.framework.Test"/>
+	                      <test property="org.eclipse.jdt.core.hasTypeOnClasspath" value="cucumber.junit.Cucumber"/>
+	                   </adapt>
+	                </iterate>
+	             </with>
+	          </enablement>
+	       </contextualLaunch>
+	       <configurationType id="potes.cucumberjvm.launching.cucumberTest"/>
+	       <description description="%DebugJUnitLaunchShortcut.description" mode="debug"/>
+	       <description description="%RunJUnitLaunchShortcut.description" mode="run"/>
+	    </shortcut>
+	</extension>
+	<extension point="org.eclipse.debug.core.launchConfigurationTypes">
+		<launchConfigurationType
+			name="Cucumber JVM Test"
+			delegate="potes.cucumberjvm.eclipseplugin.launch.CucumberTestLaunchDelegate"
+			modes="run, debug"               
+			id="potes.cucumberjvm.launching.cucumberTest"> 
+		</launchConfigurationType>
+	</extension>
+	<extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+	    <launchConfigurationTabGroup
+	        type="potes.cucumberjvm.launching.cucumberTest"
+	        class="potes.cucumberjvm.eclipseplugin.launch.CucumberTabGroup"
+	        id="potes.cucumberjvm.launching.cucumberTest.tabGroup">
+	    </launchConfigurationTabGroup>
+	</extension>
 </plugin>

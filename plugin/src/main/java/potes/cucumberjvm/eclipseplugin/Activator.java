@@ -19,10 +19,12 @@ package potes.cucumberjvm.eclipseplugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -71,6 +73,8 @@ public class Activator extends AbstractUIPlugin {
 	
 	// The plug-in ID
 	public static final String PLUGIN_ID = "cukes-jvm-plugin"; //$NON-NLS-1$
+	public static final String LAUNCH_CONFIG_TYPE = "potes.cucumberjvm.launching.cucumberTest";
+	public static final String LAUNCH_FEATURE_PATH = LAUNCH_CONFIG_TYPE+".featurePath";
 
 	// The shared instance
 	private static Activator plugin;
@@ -209,6 +213,35 @@ public class Activator extends AbstractUIPlugin {
 		}
 	}
 	
+	public Set<IType> getStepDefinitionTypes() {
+		Set<IType> types = new HashSet<IType>();
+		addTypes(types, givenSteps);
+		addTypes(types, whenSteps);
+		addTypes(types, thenSteps);
+		addTypes(types, andSteps);
+		addTypes(types, butSteps);
+		return types;
+	}
+	
+	public Set<String> getStepDefinitionPackages() {
+		Set<String> packages = new HashSet<String>();
+		for (IType type : getStepDefinitionTypes()) {
+			String fqn = type.getFullyQualifiedName();
+			if (fqn.contains(".")) {
+				packages.add(fqn.substring(0, fqn.lastIndexOf('.')));
+			} else {
+				packages.add("");
+			}
+		}
+		return packages;
+	}
+	
+	private void addTypes(Set<IType> types, Map<String, IMethod> stepMethods) {
+		for (IMethod method : stepMethods.values()) {
+			types.add(method.getDeclaringType());
+		}
+	}
+
 	public List<String> getSteps(String type) {
 		Map<String, IMethod> stepEntries = steps.get(type);
 		if (stepEntries == null) return null;

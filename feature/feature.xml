@@ -2,7 +2,7 @@
 <feature
       id="cukesjvmfeature"
       label="Cucumber-JVM Editor and Runner"
-      version="0.0.2">
+      version="0.1.0">
 
    <description url="http://mrpotes.github.com/cukes-jvm-eclipse-plugin">
       Plugin supplying an editor and runner for Cucumber feature files.
