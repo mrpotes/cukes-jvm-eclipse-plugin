@@ -15,6 +15,7 @@ TO-DO
 * step table argument usage highlighting
 * ~~Right-click Run-as for .feature files~~
 * JUnit results view to feature file linking (if possible?)
+* Test result highlighting in feature editor
 
 License
 -------
