@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Cukes-jvm-plugin
-Bundle-SymbolicName: cukes-jvm-plugin; singleton:=true
-Bundle-Version: 0.1.0
+Bundle-SymbolicName: cukes-jvm-plugin;singleton:=true
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: potes.cucumberjvm.eclipseplugin.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,6 +14,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.launching;bundle-version="3.6.1",
  org.eclipse.debug.core;bundle-version="3.7.1",
  org.eclipse.debug.ui;bundle-version="3.7.102",
- org.eclipse.jdt.debug.ui;bundle-version="3.6.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ org.eclipse.jdt.debug.ui;bundle-version="3.6.1",
+ org.eclipse.core.expressions;bundle-version="3.4.400"
 Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

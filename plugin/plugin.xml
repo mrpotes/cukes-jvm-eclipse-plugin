@@ -21,7 +21,7 @@
       <editor
             name="Cucumber Editor"
             extensions="feature"
-            icon="icons/sample.gif"
+            icon="icons/cukes.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="potes.cucumberjvm.eclipseplugin.editors.CucumberEditor"
             id="potes.cucumberjvm.eclipseplugin.editors.CucumberEditor">
@@ -31,7 +31,7 @@
 	<extension point="org.eclipse.debug.ui.launchShortcuts">
 	    <shortcut
 	          label="Cucumber Test"
-	          icon="$nl$/icons/full/obj16/julaunch.gif"
+	          icon="icons/cukes.gif"
 	          helpContextId="org.eclipse.jdt.junit.launch_shortcut"
 	          class="potes.cucumberjvm.eclipseplugin.launch.CucumberLaunchShortcut"
 	          modes="run, debug"
@@ -41,11 +41,9 @@
 	             <with variable="selection">
 	                <count value="1"/>
 	                <iterate>
-	                   <adapt type="org.eclipse.jdt.core.IJavaElement">
 	                      <test property="org.eclipse.debug.ui.matchesPattern" value="*.feature"/>
-	                      <test property="org.eclipse.jdt.core.isInJavaProject"/>
-	                      <test property="org.eclipse.jdt.core.hasTypeOnClasspath" value="junit.framework.Test"/>
-	                      <test property="org.eclipse.jdt.core.hasTypeOnClasspath" value="cucumber.junit.Cucumber"/>
+	                   <adapt type="org.eclipse.core.resources.IResource">
+	                      <test property="potes.cucumberjvm.eclipseplugin.launch.isCucumberProject"/>
 	                   </adapt>
 	                </iterate>
 	             </with>
@@ -71,4 +69,12 @@
 	        id="potes.cucumberjvm.launching.cucumberTest.tabGroup">
 	    </launchConfigurationTabGroup>
 	</extension>
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="potes.cucumberjvm.eclipseplugin.launch.CucumberLaunchableFeatureTester"
+            id="potes.cucumberjvm.eclipseplugin.launch.CucumberLaunchableFeatureTester"
+            namespace="potes.cucumberjvm.eclipseplugin.launch"
+            properties="isCucumberProject"
+            type="org.eclipse.core.resources.IResource"/>            
+   </extension>
 </plugin>
