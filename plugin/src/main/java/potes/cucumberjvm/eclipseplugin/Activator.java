@@ -176,19 +176,23 @@ public class Activator extends AbstractUIPlugin {
 			}
 			IMethod method = (IMethod) match.getElement();
 			for (IAnnotation annotation : method.getAnnotations()) {
-				String annotationName = annotation.getElementName();
-				String step = annotation.getMemberValuePairs()[0].getValue().toString();
-//				getLog().log(new Status(Status.INFO, PLUGIN_ID, "Adding step definition ["+step+"] for "+method.getCompilationUnit().getResource()));
-				if ("Given".equals(annotationName)) {
-					givenSteps.put(step, method);
-				} else if ("Then".equals(annotationName)) {
-					thenSteps.put(step, method);
-				} else if ("When".equals(annotationName)) {
-					whenSteps.put(step, method);
-				} else if ("And".equals(annotationName)) {
-					andSteps.put(step, method);
-				} else if ("But".equals(annotationName)) {
-					butSteps.put(step, method);
+				String annName = annotation.getElementName();
+				String annPackage = method.getDeclaringType().resolveType(annName)[0][0];
+				if (annPackage.startsWith("cucumber.annotation.") && annotation.getMemberValuePairs().length > 0) {
+					String annotationName = annName;
+					String step = annotation.getMemberValuePairs()[0].getValue().toString();
+	//				getLog().log(new Status(Status.INFO, PLUGIN_ID, "Adding step definition ["+step+"] for "+method.getCompilationUnit().getResource()));
+					if ("Given".equals(annotationName)) {
+						givenSteps.put(step, method);
+					} else if ("Then".equals(annotationName)) {
+						thenSteps.put(step, method);
+					} else if ("When".equals(annotationName)) {
+						whenSteps.put(step, method);
+					} else if ("And".equals(annotationName)) {
+						andSteps.put(step, method);
+					} else if ("But".equals(annotationName)) {
+						butSteps.put(step, method);
+					}
 				}
 			}
 		}
