@@ -72,7 +72,7 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 	@Override
 	public String getVMArguments(ILaunchConfiguration configuration) throws CoreException {
 		boolean first = true;
-		StringBuilder builder = new StringBuilder("-Dcucumber.options=\"");
+		StringBuilder builder = new StringBuilder("-ea -Dcucumber.options=\"");
 		for (String pkg : Activator.getDefault().getStepDefinitionPackages()) {
 			builder.append(first ? "--glue " : " --glue ").append(pkg.replace('.', '/'));
 			first = false;
