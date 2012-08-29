@@ -23,6 +23,11 @@ import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 
 public class FeatureDocumentProvider extends FileDocumentProvider {
+	
+	@Override
+	protected IDocument createEmptyDocument() {
+		return new FeatureDocument();
+	}
 
 	protected IDocument createDocument(Object element) throws CoreException {
 		IDocument document = super.createDocument(element);
