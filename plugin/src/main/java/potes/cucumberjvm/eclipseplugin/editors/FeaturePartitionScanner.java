@@ -16,40 +16,80 @@
 
 package potes.cucumberjvm.eclipseplugin.editors;
 
-import org.eclipse.jface.text.rules.*;
+import gherkin.I18n;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jface.text.rules.EndOfLineRule;
+import org.eclipse.jface.text.rules.IPredicateRule;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.Token;
 
 public class FeaturePartitionScanner extends RuleBasedPartitionScanner {
 	public final static String GHERKIN_COMMENT = "__gherkin_comment";
 	public final static String GHERKIN_FEATURE = "__gherkin_feature";
+	public final static String GHERKIN_BACKGROUND = "__gherkin_background";
 	public final static String GHERKIN_SCENARIO = "__gherkin_scenario";
+	public final static String GHERKIN_SCENARIO_OUTLINE = "__gherkin_scenario_outline";
+	public final static String GHERKIN_EXAMPLES = "__gherkin_examples";
 	public final static String GHERKIN_GIVEN = "__gherkin_given";
 	public final static String GHERKIN_WHEN = "__gherkin_when";
 	public final static String GHERKIN_THEN = "__gherkin_then";
 	public final static String GHERKIN_AND = "__gherkin_and";
-	public final static String GHERKIN_BUT = "__gherkin_and";
+	public final static String GHERKIN_BUT = "__gherkin_but";
+	public final static String GHERKIN_TABLE = "__gherkin_table";
 
-	public FeaturePartitionScanner() {
+    public static final String FEATURE_KEY = "feature";
+    public static final String BACKGROUND_KEY = "background";
+    public static final String SCENARIO_KEY = "scenario";
+    public static final String OUTLINE_KEY = "scenario_outline";
+    public static final String EXAMPLES_KEY = "examples";
+    public static final String GIVEN_KEY = "given";
+    public static final String WHEN_KEY = "when";
+    public static final String THEN_KEY = "then";
+    public static final String AND_KEY = "and";
+    public static final String BUT_KEY = "but";
+
+    public FeaturePartitionScanner(FeatureDocument document) {
 
 		IToken comment = new Token(GHERKIN_COMMENT);
 		IToken feature = new Token(GHERKIN_FEATURE);
+		IToken background = new Token(GHERKIN_BACKGROUND);
 		IToken scenario = new Token(GHERKIN_SCENARIO);
+		IToken scenarioOutline = new Token(GHERKIN_SCENARIO_OUTLINE);
+		IToken examples = new Token(GHERKIN_EXAMPLES);
 		IToken given = new Token(GHERKIN_GIVEN);
 		IToken when = new Token(GHERKIN_WHEN);
 		IToken then = new Token(GHERKIN_THEN);
 		IToken and = new Token(GHERKIN_AND);
 		IToken but = new Token(GHERKIN_BUT);
+		IToken table = new Token(GHERKIN_TABLE);
 
-		IPredicateRule[] rules = new IPredicateRule[8];
+		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
 
-		rules[0] = new EndOfLineRule("#", comment);
-		rules[1] = new EndOfLineRule("Feature:", feature);
-		rules[2] = new EndOfLineRule("Scenario", scenario);
-		rules[3] = new EndOfLineRule("Given", given);
-		rules[4] = new EndOfLineRule("When", when);
-		rules[5] = new EndOfLineRule("Then", then);
-		rules[6] = new EndOfLineRule("And", and);
-		rules[7] = new EndOfLineRule("But", but);
+		rules.add(new EndOfLineRule("#", comment));
+		rules.add(new EndOfLineRule("|", table));
+		
+		I18n language = document.getLanguage();
+		addRules(rules, feature, language.keywords(FEATURE_KEY));
+		addRules(rules, background, language.keywords(BACKGROUND_KEY));
+		addRules(rules, scenario, language.keywords(SCENARIO_KEY));
+		addRules(rules, scenarioOutline, language.keywords(OUTLINE_KEY));
+		addRules(rules, examples, language.keywords(EXAMPLES_KEY));
+		addRules(rules, given, language.keywords(GIVEN_KEY));
+		addRules(rules, when, language.keywords(WHEN_KEY));
+		addRules(rules, then, language.keywords(THEN_KEY));
+		addRules(rules, and, language.keywords(AND_KEY));
+		addRules(rules, but, language.keywords(BUT_KEY));
 
-		setPredicateRules(rules);
+		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
+	}
+
+	private void addRules(List<IPredicateRule> rules, IToken token, List<String> keywords) {
+		for (String keyword : keywords) {
+			rules.add(new EndOfLineRule(keyword, token));
+		}
 	}
 }

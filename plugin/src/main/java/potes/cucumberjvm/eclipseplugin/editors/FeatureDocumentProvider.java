@@ -17,9 +17,11 @@
 package potes.cucumberjvm.eclipseplugin.editors;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 
 public class FeatureDocumentProvider extends FileDocumentProvider {
@@ -31,10 +33,10 @@ public class FeatureDocumentProvider extends FileDocumentProvider {
 
 	protected IDocument createDocument(Object element) throws CoreException {
 		IDocument document = super.createDocument(element);
-		if (document != null) {
+		if (document != null && document instanceof FeatureDocument) {
 			IDocumentPartitioner partitioner =
 				new FastPartitioner(
-					new FeaturePartitionScanner(),
+					new FeaturePartitionScanner((FeatureDocument) document),
 					new String[] {
 						IDocument.DEFAULT_CONTENT_TYPE,
 						FeaturePartitionScanner.GHERKIN_FEATURE,
@@ -49,5 +51,14 @@ public class FeatureDocumentProvider extends FileDocumentProvider {
 			document.setDocumentPartitioner(partitioner);
 		}
 		return document;
+	}
+	
+	@Override
+	protected void doSaveDocument(IProgressMonitor monitor, Object element,
+			IDocument document, boolean overwrite) throws CoreException {
+		super.doSaveDocument(monitor, element, document, overwrite);
+		if (element instanceof IFileEditorInput && document instanceof FeatureDocument) {
+			setDocumentContent(document, (IFileEditorInput)element, getEncoding(element));
+		}
 	}
 }
