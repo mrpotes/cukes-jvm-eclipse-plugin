@@ -16,15 +16,18 @@
 
 package potes.cucumberjvm.eclipseplugin.editors;
 
-import java.util.ArrayList;
+import static potes.cucumberjvm.eclipseplugin.editors.FeaturePartitionScanner.*;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ContextInformation;
@@ -41,23 +44,30 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 	private static final char[] NO_AUTO_ACTIVATION = new char[0];
 	private static final IContextInformation[] NO_CONTEXTS = new IContextInformation[0];
 	private static final Pattern FIRST_WORD_PATTERN = Pattern.compile("^\\s*(\\w+ ?)(.*)$");
-	private static final List<String> ALL_KEYWORDS = 
-			Arrays.asList("Feature: ", "Background: ", "Scenario: ", "Scenario Outline: ", "Given ", "When ", "Then ", "And ", "But ");
-	private static final List<String> STEP_KEYWORDS = Arrays.asList("Given", "When", "Then", "And", "But");
-	private static final List<String> JOINING_KEYWORDS = Arrays.asList("And", "But");
+	private static final List<String> ALL_KEYWORD_KEYS = 
+			Arrays.asList(FEATURE_KEY, BACKGROUND_KEY, SCENARIO_KEY, OUTLINE_KEY, GIVEN_KEY, WHEN_KEY, THEN_KEY, AND_KEY, BUT_KEY);
+	private static final List<String> STEP_KEYWORDS = Arrays.asList(GIVEN_KEY, WHEN_KEY, THEN_KEY, AND_KEY, BUT_KEY);
+	private static final List<String> JOINING_KEYWORDS = Arrays.asList(AND_KEY, BUT_KEY);
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
-		IDocument document = viewer.getDocument();
+		if (!(viewer.getDocument() instanceof FeatureDocument)) return NO_PROPOSALS;
+
+		FeatureDocument document = (FeatureDocument) viewer.getDocument();
+		Set<String> stepKeywords = getKeywords(document, STEP_KEYWORDS);
+		Set<String> joiningKeywords = getKeywords(document, JOINING_KEYWORDS);
+		
 		String[] words = lastWord(document, offset);
 		String trimmedKeyword = words != null && words[0] != null ? words[0].trim() : null;
+		
 		if (words == null) {
 			return NO_PROPOSALS;
 		} else if (words[0] == null){
-			return asProposalList(offset, 0, ALL_KEYWORDS);
-		} else if (STEP_KEYWORDS.contains(trimmedKeyword)) {
+			return asProposalList(offset, 0, getKeywords(document, ALL_KEYWORD_KEYS));
+		} else if (stepKeywords.contains(trimmedKeyword)) {
 			List<String> stepProposals = Activator.getDefault().getSteps(trimmedKeyword);
-			if (JOINING_KEYWORDS.contains(trimmedKeyword)) {
-				List<String> moreStepProposals = Activator.getDefault().getSteps(findPreviousKeyword(document, offset));
+			if (joiningKeywords.contains(trimmedKeyword)) {
+				String previousKeyword = findPreviousKeyword(document, offset, stepKeywords, joiningKeywords);
+				List<String> moreStepProposals = Activator.getDefault().getSteps(previousKeyword);
 				if (stepProposals == null) {
 					stepProposals = moreStepProposals;
 				} else {
@@ -68,19 +78,29 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 				return matchProposalStrings(offset, words[1], !words[0].endsWith(" "), stepProposals);
 			}
 		} else {
-			return matchProposalStrings(offset, words[0], false, ALL_KEYWORDS);
+			return matchProposalStrings(offset, words[0], false, getKeywords(document, ALL_KEYWORD_KEYS));
 		}
 		return NO_PROPOSALS;
 	}
 
-	private String findPreviousKeyword(IDocument doc, int offset) {
+	private Set<String> getKeywords(FeatureDocument document, Collection<String> allKeywordKeys) {
+		Set<String> allKeywords = new TreeSet<String>();
+		for (String key : allKeywordKeys) {
+			List<String> keywords = document.getLanguage().keywords(key);
+			allKeywords.addAll(keywords);
+			allKeywords.remove("* ");
+		}
+		return allKeywords;
+	}
+
+	private String findPreviousKeyword(FeatureDocument doc, int offset, Set<String> stepKeywords, Set<String> joiningKeywords) {
 		try {
 			int loopOffset = doc.getLineOffset(doc.getLineOfOffset(offset)) - 1;
 			while (loopOffset > 0) {
 				String[] word = lastWord(doc, loopOffset);
 				if (word != null && word[0] != null) {
 					String w = word[0].trim();
-					if (STEP_KEYWORDS.contains(w) && !JOINING_KEYWORDS.contains(w)) {
+					if (stepKeywords.contains(w) && !joiningKeywords.contains(w)) {
 						return w;
 					}
 					loopOffset = doc.getLineOffset(doc.getLineOfOffset(loopOffset)) - 1;
@@ -92,7 +112,7 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 		return null;
 	}
 
-	private String[] lastWord(IDocument doc, int offset) {
+	private String[] lastWord(FeatureDocument doc, int offset) {
 		try {
 			int lineNum = doc.getLineOfOffset(offset);
 			String line = doc.get(doc.getLineOffset(lineNum), offset - doc.getLineOffset(lineNum));
@@ -107,8 +127,8 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 		return null;
 	}
 
-	private ICompletionProposal[] matchProposalStrings(int offset, String matchAgainst, boolean addPrefixSpace, List<String> stepProposals) {
-		List<String> matchingProposals = new ArrayList<String>();
+	private ICompletionProposal[] matchProposalStrings(int offset, String matchAgainst, boolean addPrefixSpace, Collection<String> stepProposals) {
+		Set<String> matchingProposals = new TreeSet<String>();
 		for (String proposal : stepProposals) {
 			if (proposal.startsWith(matchAgainst)) {
 				matchingProposals.add(addPrefixSpace ? " "+proposal : proposal);
@@ -117,7 +137,7 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 		return asProposalList(offset - matchAgainst.length(), matchAgainst.length(), matchingProposals);
 	}
 
-	private ICompletionProposal[] asProposalList(int offset, int length, List<String> proposalStrings) {
+	private ICompletionProposal[] asProposalList(int offset, int length, Set<String> proposalStrings) {
 		ICompletionProposal[] proposals = new ICompletionProposal[proposalStrings.size()];
 		int i = 0;
 		for (String proposal : proposalStrings) {

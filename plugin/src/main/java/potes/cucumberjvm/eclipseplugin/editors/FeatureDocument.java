@@ -1,17 +1,48 @@
 package potes.cucumberjvm.eclipseplugin.editors;
 
+import gherkin.I18n;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jface.text.Document;
 
 public class FeatureDocument extends Document {
 	
-	private String language = "en";
+	private static final Pattern LANGUAGE_PATTERN = Pattern.compile("^# language: (\\S+).*$");
+	private static final Map<String,I18n> TRANSLATIONS = new HashMap<String, I18n>();
+	private static final String DEFAULT_LANGUAGE = "en";
+	
+	static {
+		try {
+			for (I18n translation : I18n.getAll()) {
+				TRANSLATIONS.put(translation.getIsoCode(), translation);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private I18n language;
 
-	public String getLanguage() {
+	public I18n getLanguage() {
 		return language;
 	}
 
-	public void setLanguage(String language) {
-		this.language = language;
+	@Override
+	public void set(String text, long modificationStamp) {
+		super.set(text, modificationStamp);
+		if (text.startsWith("# language:")) {
+			Matcher m = LANGUAGE_PATTERN.matcher(text.substring(0, text.indexOf('\n')));
+			m.find();
+			String languageCode = m.group(1);
+			language = TRANSLATIONS.get(languageCode);
+		} 
+		if (language == null) {
+			language = TRANSLATIONS.get(DEFAULT_LANGUAGE);
+		}
 	}
-
 }

@@ -16,6 +16,7 @@
 
 package potes.cucumberjvm.eclipseplugin.editors;
 
+import static potes.cucumberjvm.eclipseplugin.editors.FeaturePartitionScanner.*;
 import org.eclipse.jface.text.DefaultTextDoubleClickStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
@@ -40,14 +41,15 @@ public class FeatureConfiguration extends SourceViewerConfiguration {
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
 		return new String[] {
 			IDocument.DEFAULT_CONTENT_TYPE,
-			FeaturePartitionScanner.GHERKIN_FEATURE,
-			FeaturePartitionScanner.GHERKIN_AND,
-			FeaturePartitionScanner.GHERKIN_BUT,
-			FeaturePartitionScanner.GHERKIN_COMMENT,
-			FeaturePartitionScanner.GHERKIN_GIVEN,
-			FeaturePartitionScanner.GHERKIN_THEN,
-			FeaturePartitionScanner.GHERKIN_WHEN,
-			FeaturePartitionScanner.GHERKIN_SCENARIO };
+			GHERKIN_COMMENT,
+			GHERKIN_FEATURE,
+			GHERKIN_BACKGROUND,
+			GHERKIN_SCENARIO,
+			GHERKIN_SCENARIO_OUTLINE,
+			GHERKIN_TABLE,
+			GHERKIN_GIVEN,
+			GHERKIN_WHEN,
+			GHERKIN_THEN };
 	}
 	public ITextDoubleClickStrategy getDoubleClickStrategy(
 		ISourceViewer sourceViewer,
@@ -65,14 +67,16 @@ public class FeatureConfiguration extends SourceViewerConfiguration {
 		setDamagerRepairer(reconciler, dr, IDocument.DEFAULT_CONTENT_TYPE);
 
 		dr= new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(colorManager.getColor(IFeatureColorConstants.COMMENT))));
-		setDamagerRepairer(reconciler, dr, FeaturePartitionScanner.GHERKIN_COMMENT);
+		setDamagerRepairer(reconciler, dr, GHERKIN_COMMENT);
 
 		dr= new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(colorManager.getColor(IFeatureColorConstants.DIRECTIVE))));
-		setDamagerRepairer(reconciler, dr, FeaturePartitionScanner.GHERKIN_FEATURE, FeaturePartitionScanner.GHERKIN_SCENARIO);
+		setDamagerRepairer(reconciler, dr, GHERKIN_FEATURE, GHERKIN_SCENARIO, GHERKIN_SCENARIO_OUTLINE, GHERKIN_BACKGROUND, GHERKIN_EXAMPLES);
 
 		dr= new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(colorManager.getColor(IFeatureColorConstants.STEP))));
-		setDamagerRepairer(reconciler, dr, FeaturePartitionScanner.GHERKIN_AND, FeaturePartitionScanner.GHERKIN_BUT, FeaturePartitionScanner.GHERKIN_GIVEN,
-				FeaturePartitionScanner.GHERKIN_THEN, FeaturePartitionScanner.GHERKIN_WHEN);
+		setDamagerRepairer(reconciler, dr, GHERKIN_AND, GHERKIN_BUT, GHERKIN_GIVEN, GHERKIN_THEN, GHERKIN_WHEN);
+
+		dr= new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(colorManager.getColor(IFeatureColorConstants.STRING))));
+		setDamagerRepairer(reconciler, dr, GHERKIN_TABLE);
 
 		return reconciler;
 	}
@@ -94,11 +98,11 @@ public class FeatureConfiguration extends SourceViewerConfiguration {
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 		ContentAssistant assistant = new ContentAssistant();
 		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
-		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_GIVEN);
-		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_WHEN);
-		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_THEN);
-		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_AND);
-		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), FeaturePartitionScanner.GHERKIN_BUT);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), GHERKIN_GIVEN);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), GHERKIN_WHEN);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), GHERKIN_THEN);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), GHERKIN_AND);
+		assistant.setContentAssistProcessor(new FeatureCompletionProcessor(), GHERKIN_BUT);
 		return assistant;
 	}
 	

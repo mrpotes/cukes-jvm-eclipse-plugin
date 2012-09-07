@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.core;bundle-version="3.7.1",
  org.eclipse.debug.ui;bundle-version="3.7.102",
  org.eclipse.jdt.debug.ui;bundle-version="3.6.1",
- org.eclipse.core.expressions;bundle-version="3.4.300"
+ org.eclipse.core.expressions;bundle-version="3.4.300",
+ org.eclipse.ui.ide;bundle-version="3.8.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: gherkin-2.11.2.jar,
