@@ -25,19 +25,17 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.junit.launcher.JUnitLaunchConfigurationDelegate;
-import org.eclipse.jface.dialogs.MessageDialog;
 
 import potes.cucumberjvm.eclipseplugin.Activator;
 
@@ -89,7 +87,9 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 			}
 			pathsBuilder.append(" ").append(path);
 		}
-
+		
+		normalisePackages(packages);
+		
 		StringBuilder builder = new StringBuilder("-ea -Dcucumber.options=\"--strict");
 		for (String pkg : packages) {
 			builder.append(" --glue ").append(pkg.replace('.', '/'));
@@ -99,5 +99,21 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 		String args = builder.toString();
 		Activator.getDefault().getLog().log(new Status(Status.INFO, Activator.PLUGIN_ID, "VM Args: "+args));
 		return args;
+	}
+	
+	private void normalisePackages(Set<String> packages) {
+		Iterator<String> i = packages.iterator();
+		while (i.hasNext()) {
+			if (parentPackageExists(i.next(), packages)) {
+				i.remove();
+			}
+		}
+	}
+
+	private boolean parentPackageExists(String packageName, Set<String> packages) {
+		for (String testPackage : packages) {
+			if (packageName.startsWith(testPackage) && !packageName.equals(testPackage)) return true;
+		}
+		return false;
 	}
 }
