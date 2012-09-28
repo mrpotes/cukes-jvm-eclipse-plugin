@@ -3,5 +3,8 @@
    <feature url="features/cukesjvmfeature_0.1.2.jar" id="cukesjvmfeature" version="0.1.2">
       <category name="cucumber-jvm"/>
    </feature>
+   <feature url="features/cukesjvmfeature_0.2.0.jar" id="cukesjvmfeature" version="0.2.0">
+      <category name="cucumber-jvm"/>
+   </feature>
    <category-def name="cucumber-jvm" label="Cucumber JVM"/>
 </site>
