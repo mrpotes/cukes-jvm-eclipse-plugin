@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -40,6 +41,8 @@ import potes.cucumberjvm.eclipseplugin.Activator;
 
 public class FeatureCompletionProcessor implements IContentAssistProcessor {
 
+	private static final String LANGUAGE_DECLARATION = "# language: ";
+	private static final int LANGUAGE_DECL_LENGTH = LANGUAGE_DECLARATION.length();
 	private static final ICompletionProposal[] NO_PROPOSALS = new ICompletionProposal[0];
 	private static final char[] NO_AUTO_ACTIVATION = new char[0];
 	private static final IContextInformation[] NO_CONTEXTS = new IContextInformation[0];
@@ -56,7 +59,25 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 		Set<String> stepKeywords = getKeywords(document, STEP_KEYWORDS);
 		Set<String> joiningKeywords = getKeywords(document, JOINING_KEYWORDS);
 		
-		String[] words = lastWord(document, offset);
+		String[] words;
+		if (offset > 0) {
+			words = lastWord(document, offset);
+		} else {
+			words = new String[] {null};
+			try {
+				if (document.getLength() > LANGUAGE_DECL_LENGTH && !document.get(0, LANGUAGE_DECL_LENGTH).equals(LANGUAGE_DECLARATION)) {
+					ICompletionProposal[] defaultList = asProposalList(offset, 0, getKeywords(document, ALL_KEYWORD_KEYS));
+					ICompletionProposal[] proposalList = Arrays.copyOf(defaultList, defaultList.length + 1);
+					for (int i = defaultList.length; i > 0; i--) proposalList[i] = proposalList[i-1];
+					IContextInformation info= new ContextInformation(LANGUAGE_DECLARATION, "");
+					proposalList[0] = new CompletionProposal(LANGUAGE_DECLARATION + TextUtilities.getDefaultLineDelimiter(document), offset, 0, 
+							LANGUAGE_DECL_LENGTH, null, LANGUAGE_DECLARATION, info, "");
+					return proposalList;
+				}
+			} catch (BadLocationException e) {
+				Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+			}
+		}
 		String trimmedKeyword = words != null && words[0] != null ? words[0].trim() : null;
 		
 		if (words == null) {

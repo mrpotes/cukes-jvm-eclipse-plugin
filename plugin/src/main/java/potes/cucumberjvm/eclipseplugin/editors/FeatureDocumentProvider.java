@@ -16,13 +16,20 @@
 
 package potes.cucumberjvm.eclipseplugin.editors;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
+
+import potes.cucumberjvm.eclipseplugin.Activator;
 
 public class FeatureDocumentProvider extends FileDocumentProvider {
 	
@@ -58,7 +65,28 @@ public class FeatureDocumentProvider extends FileDocumentProvider {
 			IDocument document, boolean overwrite) throws CoreException {
 		super.doSaveDocument(monitor, element, document, overwrite);
 		if (element instanceof IFileEditorInput && document instanceof FeatureDocument) {
-			setDocumentContent(document, (IFileEditorInput)element, getEncoding(element));
+			IFileEditorInput editor = (IFileEditorInput)element;
+			BufferedReader in = null;
+			try {
+				in = new BufferedReader(new InputStreamReader(editor.getFile().getContents(), getEncoding(element)), 50);
+				StringBuilder buffer= new StringBuilder(50);
+				char[] readBuffer= new char[50];
+				int n= in.read(readBuffer);
+				while (n > 0 && buffer.length() < 50) {
+					buffer.append(readBuffer, 0, Math.min(n, buffer.capacity() - buffer.length()));
+					n= in.read(readBuffer);
+				}
+	
+				((FeatureDocument)document).setLanguageFromContent(buffer.toString());
+			} catch (Exception e) {
+				Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+			} finally {
+				try {
+					if (in != null) in.close();
+				} catch (IOException e) {
+					Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+				}
+			}
 		}
 	}
 }

@@ -35,6 +35,10 @@ public class FeatureDocument extends Document {
 	@Override
 	public void set(String text, long modificationStamp) {
 		super.set(text, modificationStamp);
+		setLanguageFromContent(text);
+	}
+
+	public void setLanguageFromContent(String text) {
 		if (text.startsWith("# language:")) {
 			Matcher m = LANGUAGE_PATTERN.matcher(text.substring(0, text.indexOf('\n')));
 			m.find();
