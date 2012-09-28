@@ -232,14 +232,16 @@ public class Activator extends AbstractUIPlugin {
 		return types;
 	}
 	
-	public Set<String> getStepDefinitionPackages() {
+	public Set<String> getStepDefinitionPackages(IJavaProject javaProject) {
 		Set<String> packages = new HashSet<String>();
 		for (IType type : getStepDefinitionTypes()) {
-			String fqn = type.getFullyQualifiedName();
-			if (fqn.contains(".")) {
-				packages.add(fqn.substring(0, fqn.lastIndexOf('.')));
-			} else {
-				packages.add("");
+			if (javaProject.isOnClasspath(type)) {
+				String fqn = type.getFullyQualifiedName();
+				if (fqn.contains(".")) {
+					packages.add(fqn.substring(0, fqn.lastIndexOf('.')));
+				} else {
+					packages.add("");
+				}
 			}
 		}
 		return packages;

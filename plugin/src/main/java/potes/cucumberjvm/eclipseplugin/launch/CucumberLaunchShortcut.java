@@ -30,6 +30,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.ILaunchShortcut2;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -44,15 +45,41 @@ import potes.cucumberjvm.eclipseplugin.Activator;
 public class CucumberLaunchShortcut implements ILaunchShortcut2 {
 
 	public void launch(IEditorPart editor, String mode) {
-		try {
+		launch(mode, getLaunchConfigurations(editor), (IFile)getLaunchableResource(editor));
+	}
 
-			ILaunchConfiguration[] existingConfigurations = getLaunchConfigurations(editor);
+	public ILaunchConfiguration[] getLaunchConfigurations(IEditorPart editor) {
+		return getLaunchConfigurations((IFile) getLaunchableResource(editor));
+	}
+
+	public IResource getLaunchableResource(IEditorPart editor) {
+		IEditorInput editorInput = editor.getEditorInput();
+		return (IFile) editorInput.getAdapter(IFile.class);
+	}
+
+	public void launch(ISelection selection, String mode) {
+		launch(mode, getLaunchConfigurations(selection), (IFile)getLaunchableResource(selection));
+	}
+
+	public ILaunchConfiguration[] getLaunchConfigurations(ISelection selection) {
+		return getLaunchConfigurations((IFile)getLaunchableResource(selection));
+	}
+
+	public IResource getLaunchableResource(ISelection selection) {
+		if (selection instanceof IStructuredSelection && ((IStructuredSelection) selection).getFirstElement() instanceof IFile) {
+			return (IFile)((IStructuredSelection) selection).getFirstElement();
+		}
+		return null;
+	}
+
+	private void launch(String mode, ILaunchConfiguration[] existingConfigurations, IFile launchableResource) {
+		try {
 			if (existingConfigurations.length > 1) {
 				selectConfig(existingConfigurations, mode).launch(mode, null);
 			} else if (existingConfigurations.length == 1){
 				existingConfigurations[0].launch(mode, null);
 			} else {
-				createLaunchConfiguration(new IFile[] {(IFile)getLaunchableResource(editor)}).launch(mode, null);
+				createLaunchConfiguration(new IFile[] {launchableResource}).launch(mode, null);
 			}
 		} catch (CoreException e) {
 			Activator.getDefault().getLog().log(e.getStatus());
@@ -73,8 +100,8 @@ public class CucumberLaunchShortcut implements ILaunchShortcut2 {
         throw new InterruptedException(); // cancelled by user
 	}
 
-	public ILaunchConfiguration[] getLaunchConfigurations(IEditorPart editor) {
-		IFile file = (IFile) getLaunchableResource(editor);
+	private ILaunchConfiguration[] getLaunchConfigurations(IFile file) {
+		if (file == null) return null;
 		try {
 			return getLaunchConfigurations(new IFile[] { file });
 		} catch (CoreException e) {
@@ -109,7 +136,9 @@ public class CucumberLaunchShortcut implements ILaunchShortcut2 {
 
 	private ILaunchConfiguration[] getLaunchConfigurations(IFile[] files) throws CoreException {
 		List<String> features = new ArrayList<String>();
-		for (IFile file: files) features.add(file.getProjectRelativePath().toOSString());
+		for (IFile file: files) {
+			features.add(file.getProjectRelativePath().toOSString());
+		}
 		
 		ILaunchConfiguration[] launchConfigurations = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurations(getConfigType());
 		List<ILaunchConfiguration> matchingConfigurations = new ArrayList<ILaunchConfiguration>();
@@ -118,26 +147,6 @@ public class CucumberLaunchShortcut implements ILaunchShortcut2 {
 			if (configFeatures.containsAll(features) && features.containsAll(configFeatures)) matchingConfigurations.add(launchConfig);
 		}
 		return matchingConfigurations.toArray(new ILaunchConfiguration[matchingConfigurations.size()]);
-	}
-
-	public IResource getLaunchableResource(IEditorPart editor) {
-		IEditorInput editorInput = editor.getEditorInput();
-		return (IFile) editorInput.getAdapter(IFile.class);
-	}
-
-	public void launch(ISelection selection, String mode) {
-		// TODO
-
-	}
-
-	public ILaunchConfiguration[] getLaunchConfigurations(ISelection selection) {
-		// TODO
-		return null;
-	}
-
-	public IResource getLaunchableResource(ISelection selection) {
-		// TODO
-		return null;
 	}
 
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -36,6 +37,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.junit.launcher.JUnitLaunchConfigurationDelegate;
+import org.eclipse.jface.dialogs.MessageDialog;
 
 import potes.cucumberjvm.eclipseplugin.Activator;
 
@@ -81,9 +83,18 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 		StringBuilder pathsBuilder = new StringBuilder();
 		List<String> paths = configuration.getAttribute(Activator.LAUNCH_FEATURE_PATH, Collections.EMPTY_LIST);
 		for (String path : paths) {
-			String pkg = javaProject.findPackageFragment(new Path(path).removeLastSegments(1)).getElementName();
-			packages.add(pkg);
-			pathsBuilder.append(" ").append(path);
+			IPath packageLocation = new Path(path).removeLastSegments(1);
+			try {
+				String pkg = javaProject.findPackageFragment(javaProject.getProject().getFile(packageLocation).getFullPath()).getElementName();
+				if (pkg != null && pkg.length() > 0) {
+					packages.add(pkg);
+				}
+				pathsBuilder.append(" ").append(path);
+			} catch (IllegalArgumentException e) {
+				MessageDialog.openError(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(), "Cucumber Error",  
+						"Cannot find package for selected test.\nHint: Tests in default package cannot be executed.");
+				throw e;
+			}
 		}
 
 		StringBuilder builder = new StringBuilder("-ea -Dcucumber.options=\"--strict");
