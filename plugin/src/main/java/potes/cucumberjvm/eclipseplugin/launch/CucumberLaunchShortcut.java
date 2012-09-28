@@ -89,7 +89,7 @@ public class CucumberLaunchShortcut implements ILaunchShortcut2 {
 	}
 
 	private ILaunchConfiguration selectConfig(ILaunchConfiguration[] existingConfigurations, String mode) throws InterruptedException {
-        ElementListSelectionDialog dialog= new ElementListSelectionDialog(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(), null);
+        ElementListSelectionDialog dialog= new ElementListSelectionDialog(Activator.getActiveShell(), null);
         dialog.setElements(existingConfigurations);
         dialog.setTitle("Select "+mode+" configuration");
         dialog.setMultipleSelection(false);

@@ -49,6 +49,7 @@ import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -266,5 +267,9 @@ public class Activator extends AbstractUIPlugin {
 			steps.put(annName, stepMap);
 		}
 		return stepMap;
+	}
+
+	public static Shell getActiveShell() {
+		return getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 	}
 }

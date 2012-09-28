@@ -83,18 +83,11 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 		StringBuilder pathsBuilder = new StringBuilder();
 		List<String> paths = configuration.getAttribute(Activator.LAUNCH_FEATURE_PATH, Collections.EMPTY_LIST);
 		for (String path : paths) {
-			IPath packageLocation = new Path(path).removeLastSegments(1);
-			try {
-				String pkg = javaProject.findPackageFragment(javaProject.getProject().getFile(packageLocation).getFullPath()).getElementName();
-				if (pkg != null && pkg.length() > 0) {
-					packages.add(pkg);
-				}
-				pathsBuilder.append(" ").append(path);
-			} catch (IllegalArgumentException e) {
-				MessageDialog.openError(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(), "Cucumber Error",  
-						"Cannot find package for selected test.\nHint: Tests in default package cannot be executed.");
-				throw e;
+			String pkg = javaProject.findPackageFragment(javaProject.getProject().getFile(path).getParent().getFullPath()).getElementName();
+			if (pkg != null && pkg.length() > 0) {
+				packages.add(pkg);
 			}
+			pathsBuilder.append(" ").append(path);
 		}
 
 		StringBuilder builder = new StringBuilder("-ea -Dcucumber.options=\"--strict");
