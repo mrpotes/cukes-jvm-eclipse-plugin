@@ -24,12 +24,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.junit.launcher.JUnitLaunchConfigurationDelegate;
 
@@ -71,18 +75,25 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 	
 	@Override
 	public String getVMArguments(ILaunchConfiguration configuration) throws CoreException {
-		boolean first = true;
-		StringBuilder builder = new StringBuilder("-ea -Dcucumber.options=\"");
-		for (String pkg : Activator.getDefault().getStepDefinitionPackages()) {
-			builder.append(first ? "--glue " : " --glue ").append(pkg.replace('.', '/'));
-			first = false;
-		}
-		
+		IJavaProject javaProject = getJavaProject(configuration);
+		Set<String> packages = new HashSet<String>(Activator.getDefault().getStepDefinitionPackages(javaProject));
+
+		StringBuilder pathsBuilder = new StringBuilder();
 		List<String> paths = configuration.getAttribute(Activator.LAUNCH_FEATURE_PATH, Collections.EMPTY_LIST);
 		for (String path : paths) {
-			builder.append(" ").append(path);
+			String pkg = javaProject.findPackageFragment(new Path(path).removeLastSegments(1)).getElementName();
+			packages.add(pkg);
+			pathsBuilder.append(" ").append(path);
 		}
-		builder.append("\"");
-		return builder.toString();
+
+		StringBuilder builder = new StringBuilder("-ea -Dcucumber.options=\"--strict");
+		for (String pkg : packages) {
+			builder.append(" --glue ").append(pkg.replace('.', '/'));
+		}
+		
+		builder.append(pathsBuilder).append("\"");
+		String args = builder.toString();
+		Activator.getDefault().getLog().log(new Status(Status.INFO, Activator.PLUGIN_ID, "VM Args: "+args));
+		return args;
 	}
 }
