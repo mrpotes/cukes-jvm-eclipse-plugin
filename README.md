@@ -6,16 +6,16 @@ Cucumber JVM Eclipse Plugin
 TO-DO
 -----
 
+* step definition linking
+* Test result highlighting in feature editor
+* step definition parameter syntax highlighting
+* step table argument usage highlighting
+* JUnit results view to feature file linking (if possible?)
 * ~~.feature editor~~
 * ~~keyword syntax highlighting~~
 * ~~keyword auto-complete~~
 * ~~step auto-complete~~
-* step definition parameter syntax highlighting
-* step definition linking
-* step table argument usage highlighting
 * ~~Right-click Run-as for .feature files~~
-* JUnit results view to feature file linking (if possible?)
-* Test result highlighting in feature editor
 
 License
 -------
