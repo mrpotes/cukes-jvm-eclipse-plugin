@@ -53,7 +53,11 @@ public class FeaturePartitionScanner extends RuleBasedPartitionScanner {
     public static final String BUT_KEY = "but";
 
     public FeaturePartitionScanner(FeatureDocument document) {
+		I18n language = document.getLanguage();
+		setRules(language);
+	}
 
+	protected void setRules(I18n language) {
 		IToken comment = new Token(GHERKIN_COMMENT);
 		IToken feature = new Token(GHERKIN_FEATURE);
 		IToken background = new Token(GHERKIN_BACKGROUND);
@@ -72,7 +76,6 @@ public class FeaturePartitionScanner extends RuleBasedPartitionScanner {
 		rules.add(new EndOfLineRule("#", comment));
 		rules.add(new EndOfLineRule("|", table));
 		
-		I18n language = document.getLanguage();
 		addRules(rules, feature, language.keywords(FEATURE_KEY));
 		addRules(rules, background, language.keywords(BACKGROUND_KEY));
 		addRules(rules, scenario, language.keywords(SCENARIO_KEY));
