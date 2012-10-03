@@ -62,6 +62,13 @@
 			id="potes.cucumberjvm.launching.cucumberTest"> 
 		</launchConfigurationType>
 	</extension>
+	<extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+ 		<launchConfigurationTypeImage
+			icon="icons/cukes.gif"
+			configTypeID="potes.cucumberjvm.launching.cucumberTest"
+			id="potes.cucumberjvm.launching.cucumberTest.image">
+		</launchConfigurationTypeImage>
+	</extension>
 	<extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
 	    <launchConfigurationTabGroup
 	        type="potes.cucumberjvm.launching.cucumberTest"
