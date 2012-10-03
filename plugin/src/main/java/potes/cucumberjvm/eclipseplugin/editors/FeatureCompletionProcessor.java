@@ -107,9 +107,9 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 	private Set<String> getKeywords(FeatureDocument document, Collection<String> allKeywordKeys) {
 		Set<String> allKeywords = new TreeSet<String>();
 		for (String key : allKeywordKeys) {
-			List<String> keywords = document.getLanguage().keywords(key);
-			allKeywords.addAll(keywords);
-			allKeywords.remove("* ");
+			for (String keyword : document.getLanguage().keywords(key)) {
+				if (!"* ".equals(keyword)) allKeywords.add(keyword.trim());
+			}
 		}
 		return allKeywords;
 	}
