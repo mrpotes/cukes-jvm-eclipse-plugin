@@ -38,6 +38,7 @@ import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -83,8 +84,6 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 		IJavaProject[] projects = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects();
 		
-		
-		
 		SearchEngine searchEngine = new SearchEngine();
 		for (IJavaProject project : projects) {
 			checkProject(searchEngine, project, null);
@@ -118,7 +117,18 @@ public class Activator extends AbstractUIPlugin {
 //			pattern = SearchPattern.createOrPattern(pattern, SearchPattern.createPattern(andType, IJavaSearchConstants.ANNOTATION_TYPE_REFERENCE));
 //			pattern = SearchPattern.createOrPattern(pattern, SearchPattern.createPattern(butType, IJavaSearchConstants.ANNOTATION_TYPE_REFERENCE));
 			
-			IJavaSearchScope searchScope = SearchEngine.createJavaSearchScope(element == null ? project.getChildren() : new IJavaElement[]{element}, element == null);
+			IJavaSearchScope searchScope;
+			if (element == null) {
+				List<IJavaElement> children = new ArrayList<IJavaElement>();
+				for (IPackageFragmentRoot child : project.getPackageFragmentRoots()) {
+					if (!child.isArchive() && !child.isExternal() && child.isOpen()) {
+						children.add(child);
+					}
+				}
+				searchScope = SearchEngine.createJavaSearchScope(children.toArray(new IJavaElement[children.size()]), true);
+			} else {
+				searchScope = SearchEngine.createJavaSearchScope(new IJavaElement[]{element}, false);
+			}
 			SearchParticipant[] participants = new SearchParticipant[] {SearchEngine.getDefaultSearchParticipant()};
 			AnnotationFinder annotationFinder = new AnnotationFinder(project, searchEngine, searchScope, participants);
 			searchEngine.search(pattern, participants, searchScope, annotationFinder, null);
