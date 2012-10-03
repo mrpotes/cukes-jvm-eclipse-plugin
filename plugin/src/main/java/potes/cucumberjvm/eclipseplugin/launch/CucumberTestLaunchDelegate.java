@@ -30,11 +30,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.junit.launcher.JUnitLaunchConfigurationDelegate;
 
 import potes.cucumberjvm.eclipseplugin.Activator;
@@ -81,9 +84,17 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 		StringBuilder pathsBuilder = new StringBuilder();
 		List<String> paths = configuration.getAttribute(Activator.LAUNCH_FEATURE_PATH, Collections.EMPTY_LIST);
 		for (String path : paths) {
-			String pkg = javaProject.findPackageFragment(javaProject.getProject().getFile(path).getParent().getFullPath()).getElementName();
-			if (pkg != null && pkg.length() > 0) {
-				packages.add(pkg);
+			IPath fullPath = javaProject.getProject().getFile(path).getParent().getFullPath();
+			IPackageFragment packageFragment = javaProject.findPackageFragment(fullPath);
+			if (packageFragment != null) {
+				packages.add(packageFragment.getElementName());
+			} else {
+				for (IPackageFragmentRoot root : javaProject.getPackageFragmentRoots()) {
+					if (root.getResource().getFullPath().isPrefixOf(fullPath)) {
+						packages.add(fullPath.makeRelativeTo(root.getResource().getFullPath()).toString().replace('/', '.'));
+						break;
+					}
+				}
 			}
 			pathsBuilder.append(" ").append(path);
 		}
