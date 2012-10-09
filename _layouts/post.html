@@ -2,9 +2,10 @@
 layout: default
 ---
 <div class="sixteen columns">
-	<h3>{{ page.title }}</a></h3>
+	<h3>{{ page.title }}</h3>
 	<p class="author">
-		<span class="date">{{page.date}}</span>
+		<span class="date">{{ page.date | date_to_string }}</span>
 	</p>
 	<div class="content">{{ content }}</div>
+	<hr/>
 </div>
