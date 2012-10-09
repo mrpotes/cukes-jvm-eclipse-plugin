@@ -1,15 +1,27 @@
-<html>
-<head>
-<title>Cucumber JVM Eclipse Plugin</title>
-</head>
-<body>
-<h1>Cucumber JVM Eclipse Plugin</h1>
-See the <a href="https://github.com/mrpotes/cukes-jvm-eclipse-plugin/blob/master/README.md">README</a> for more information.
-<h3>Update Site</h3>
-<a href="update-site">Here</a>
-<h3>Issues</h3>
-Please raise any issues (that aren't outstanding in the TO-DO list in the README)
-<a href="https://github.com/mrpotes/cukes-jvm-eclipse-plugin/issues">here</a>.
-</a>
-</body>
-</html>
+---
+layout: default
+title: Cucumber JVM Eclipse Plugin
+---
+		<div class="sixteen columns">
+			<h3>About the Plugin</h3>
+			<p>See the <a href="https://github.com/mrpotes/cukes-jvm-eclipse-plugin/blob/master/README.md">README</a> for more information.</p>
+			<h5>Update Site</h5>
+			<p><a href="update-site">Here</a></p>
+			<h5>Issues</h5>
+			<p>Please raise any issues (that aren't outstanding in the TO-DO list in the README)
+			<a href="https://github.com/mrpotes/cukes-jvm-eclipse-plugin/issues">here</a>.</p>
+			<hr/>
+		</div>
+		<div class="sixteen columns">
+			<h2>News</h2>
+			<hr/>
+			{% for post in paginator.posts %}
+			<div class="twelve columns offset-by-two">
+				<h4><a href="{{ post.url }}">{{ post.title }}</a></h4>
+				<p class="author">
+					<span class="date">{{post.date}}</span>
+				</p>
+				<div class="content">{{ post.content }}</div>
+			</div>
+			{% endfor %}
+		</div>
