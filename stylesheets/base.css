@@ -268,4 +268,7 @@
 	.add-bottom { margin-bottom: 20px !important; }
 
 
-.nav ul li {display : inline; border-right: 1px solid lightGrey; border-left: 1px solid lightGrey; padding: 0 25px 0;}
+.nav ul li {display : inline; border-right: 1px solid lightGrey; padding: 0 25px 0;}
+.nav ul li:first-child {border-left: 1px solid lightGrey;}
+.nav ul {margin-bottom: 0px;}
+.nav {text-align: center; border-top: 1px solid lightGrey; border-bottom: 1px solid lightGrey;}
