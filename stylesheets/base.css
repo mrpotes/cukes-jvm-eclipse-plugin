@@ -268,3 +268,4 @@
 	.add-bottom { margin-bottom: 20px !important; }
 
 
+.nav ul li {display : inline; border-right: 1px solid lightGrey; border-left: 1px solid lightGrey; padding: 0 25px 0;}
