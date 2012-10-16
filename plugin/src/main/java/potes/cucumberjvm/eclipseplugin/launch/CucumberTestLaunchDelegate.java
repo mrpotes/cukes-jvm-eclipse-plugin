@@ -52,7 +52,7 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 		projectClasspath = Arrays.copyOf(projectClasspath, projectClasspath.length + 1);
 		File temp = new File(System.getProperty("java.io.tmpdir"));
 		File jar = new File(temp, "cukes-run-test.jar");
-		FileOutputStream os;
+		FileOutputStream os = null;
 		try {
 			os = new FileOutputStream(jar);
 		InputStream is = this.getClass().getClassLoader().getResourceAsStream("cukes-run-test.jar");
@@ -65,6 +65,12 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 			throw new CoreException(new Status(Status.ERROR, Activator.PLUGIN_ID, "Coudln't find file", e));
 		} catch (IOException e) {
 			throw new CoreException(new Status(Status.ERROR, Activator.PLUGIN_ID, "Couldn't copy jar", e));
+		} finally {
+			try {
+				if (os != null) os.close();
+			} catch (IOException e) {
+				throw new CoreException(new Status(Status.ERROR, Activator.PLUGIN_ID, "Exception closing output", e));
+			}
 		}
 		Activator.getDefault().getLog().log(new Status(Status.INFO, Activator.PLUGIN_ID, "Classpath: "+Arrays.toString(projectClasspath)));
 		projectClasspath[projectClasspath.length - 1] = jar.getAbsolutePath();

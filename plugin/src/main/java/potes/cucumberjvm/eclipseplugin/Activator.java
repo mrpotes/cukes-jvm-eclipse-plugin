@@ -233,10 +233,11 @@ public class Activator extends AbstractUIPlugin {
 		return types;
 	}
 	
-	public Set<String> getStepDefinitionPackages(IJavaProject javaProject) {
+	public Set<String> getStepDefinitionPackages(IJavaProject javaProject) throws JavaModelException {
 		Set<String> packages = new HashSet<String>();
 		for (IType type : getStepDefinitionTypes()) {
-			if (javaProject.isOnClasspath(type)) {
+			IResource underlyingResource = type.getUnderlyingResource();
+			if ((underlyingResource != null && javaProject.isOnClasspath(underlyingResource)) || javaProject.isOnClasspath(type)) {
 				String fqn = type.getFullyQualifiedName();
 				if (fqn.contains(".")) {
 					packages.add(fqn.substring(0, fqn.lastIndexOf('.')));
