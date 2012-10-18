@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/cukesjvmfeature_0.2.1.jar" id="cukesjvmfeature" version="0.2.1">
+   <feature url="features/cukesjvmfeature_0.2.2.jar" id="cukesjvmfeature" version="0.2.2">
       <category name="cucumber-jvm"/>
    </feature>
    <category-def name="cucumber-jvm" label="Cucumber JVM"/>
