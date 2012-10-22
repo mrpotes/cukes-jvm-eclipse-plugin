@@ -85,7 +85,7 @@ public class CucumberTestLaunchDelegate extends JUnitLaunchConfigurationDelegate
 	@Override
 	public String getVMArguments(ILaunchConfiguration configuration) throws CoreException {
 		IJavaProject javaProject = getJavaProject(configuration);
-		Set<String> packages = new HashSet<String>(Activator.getDefault().getStepDefinitionPackages(javaProject));
+		Set<String> packages = new HashSet<String>(Activator.getLanguage().getCucumberDefinitionPackages(javaProject));
 
 		StringBuilder pathsBuilder = new StringBuilder();
 		List<String> paths = configuration.getAttribute(Activator.LAUNCH_FEATURE_PATH, Collections.EMPTY_LIST);

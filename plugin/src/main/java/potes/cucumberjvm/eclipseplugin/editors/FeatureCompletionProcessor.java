@@ -85,10 +85,10 @@ public class FeatureCompletionProcessor implements IContentAssistProcessor {
 		} else if (words[0] == null){
 			return asProposalList(offset, 0, getKeywords(document, ALL_KEYWORD_KEYS));
 		} else if (stepKeywords.contains(trimmedKeyword)) {
-			List<String> stepProposals = Activator.getDefault().getSteps(trimmedKeyword);
+			List<String> stepProposals = Activator.getLanguage().getSteps(trimmedKeyword);
 			if (joiningKeywords.contains(trimmedKeyword)) {
 				String previousKeyword = findPreviousKeyword(document, offset, stepKeywords, joiningKeywords);
-				List<String> moreStepProposals = Activator.getDefault().getSteps(previousKeyword);
+				List<String> moreStepProposals = Activator.getLanguage().getSteps(previousKeyword);
 				if (stepProposals == null) {
 					stepProposals = moreStepProposals;
 				} else {
