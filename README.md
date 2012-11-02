@@ -3,6 +3,12 @@ cukes-jvm-eclipse-plugin
 
 Cucumber JVM Eclipse Plugin
 
+Installation
+------------
+
+Please [head over to the website](http://mrpotes.github.com/cukes-jvm-eclipse-plugin) 
+and use the update site URL provided there.
+
 TO-DO
 -----
 
